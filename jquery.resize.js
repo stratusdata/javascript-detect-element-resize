@@ -98,7 +98,7 @@
 		if (attachEvent) element.attachEvent('onresize', fn);
 		else {
 			if (!element.__resizeTriggers__) {
-				if (getComputedStyle(element).position == 'static') element.style.position = 'relative';
+				if (getComputedStyle(element).position == 'static' && document.body !== element) element.style.position = 'relative';
 				createStyles();
 				element.__resizeLast__ = {};
 				element.__resizeListeners__ = [];
