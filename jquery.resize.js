@@ -10,9 +10,9 @@
 (function ( $ ) {
 	var attachEvent = document.attachEvent,
 		stylesCreated = false;
-	
+
 	var jQuery_resize = $.fn.resize;
-	
+
 	$.fn.resize = function(callback) {
 		return this.each(function() {
 			if(this == window)
@@ -27,14 +27,14 @@
 			removeResizeListener(this, callback);
 		});
 	}
-	
+
 	if (!attachEvent) {
 		var requestFrame = (function(){
 			var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame ||
 								function(fn){ return window.setTimeout(fn, 20); };
 			return function(fn){ return raf(fn); };
 		})();
-		
+
 		var cancelFrame = (function(){
 			var cancel = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame ||
 								   window.clearTimeout;
@@ -58,7 +58,7 @@
 			return element.offsetWidth != element.__resizeLast__.width ||
 						 element.offsetHeight != element.__resizeLast__.height;
 		}
-		
+
 		function scrollListener(e){
 			var element = this;
 			resetTriggers(this);
@@ -74,13 +74,14 @@
 			});
 		};
 	}
-	
+
 	function createStyles() {
 		if (!stylesCreated) {
-			var css = '.resize-triggers { visibility: hidden; } .resize-triggers, .resize-triggers > div, .contract-trigger:before { content: \" \"; display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden; } .resize-triggers > div { background: #eee; overflow: auto; } .contract-trigger:before { width: 200%; height: 200%; }',
+			//opacity:0 works around a chrome bug https://code.google.com/p/chromium/issues/detail?id=286360
+			var css = '.resize-triggers { visibility: hidden; opacity: 0; } .resize-triggers, .resize-triggers > div, .contract-trigger:before { content: \" \"; display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden; } .resize-triggers > div { background: #eee; overflow: auto; } .contract-trigger:before { width: 200%; height: 200%; } .resize-triggers::-webkit-scrollbar, .contract-trigger::-webkit-scrollbar, .resize-triggers > div::-webkit-scrollbar { display: none; }',
 				head = document.head || document.getElementsByTagName('head')[0],
 				style = document.createElement('style');
-			
+
 			style.type = 'text/css';
 			if (style.styleSheet) {
 				style.styleSheet.cssText = css;
@@ -89,9 +90,10 @@
 			}
 
 			head.appendChild(style);
+			stylesCreated = true;
 		}
 	}
-	
+
 	window.addResizeListener = function(element, fn){
 		if (attachEvent) element.attachEvent('onresize', fn);
 		else {
@@ -110,7 +112,7 @@
 			element.__resizeListeners__.push(fn);
 		}
 	};
-	
+
 	window.removeResizeListener = function(element, fn){
 		if (attachEvent) element.detachEvent('onresize', fn);
 		else {
